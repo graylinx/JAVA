@@ -3,15 +3,7 @@ import minidungeon.MiniDungeonGUI;
 public class Player {
 	private int gold, food, health, healthmax, strength, perception, posX, posY;
 	
-	public int getHealthmax() {
-		return healthmax;
-	}
-
-	public void setHealthmax(int healthmax) {
-		this.healthmax = healthmax;
-	}
-
-	Player(){
+	Player(MiniDungeonGUI gui){
 		this.gold = 0;
 		this.food = 500;
 		this.health = 20;
@@ -21,11 +13,25 @@ public class Player {
 		this.posX = 1;
 		this.posY = 1;
 		
+		setText(gui, getGold(), getFood(), getHealth(), getHealthmax(), getStrength(), getPerception());
+		
 	}
 	
+	public void setText(MiniDungeonGUI gui, int gold, int food, int health, 
+			int healthmax, int strength, int perception){
+		gui.md_setTextGold(getGold());
+		gui.md_setTextFood(getFood());
+		gui.md_setTextHealthCurrent(getHealth());
+		gui.md_setTextHealthMax(getHealthmax());
+		gui.md_setTextStrength(getStrength());
+		gui.md_setTextPerception(getPerception());
+	}
+	
+	
 
-	public void PaintCell (MiniDungeonGUI gui, Board board, int perception,int x, int y){
-		
+	public void paintExplorer (MiniDungeonGUI gui, Board board, int perception){
+		int x = getPosX();
+		int y = getPosY();
 		Cell cell = board.getCell(x, y);
 		gui.md_setSquareColor(x, y, cell.getRed(), cell.getGreen(), cell.getBlue());
 		gui.md_moveSprite(1, x, y);
@@ -49,6 +55,50 @@ public class Player {
 					gui.md_setSpriteVisible(board.getCell(x-i, y).idItem(), true);
 				}else if (board.getCell(x+i, y).isItem()){
 					gui.md_setSpriteVisible(board.getCell(x+i, y).idItem(), true);
+				}
+			}else if(y-i <0 && x-i<0){
+				gui.md_setSquareColor(x, y+i, board.getCell(x, y+i).getRed(),
+						board.getCell(x, y+i).getGreen(), board.getCell(x, y+i).getBlue());
+				gui.md_setSquareColor(x+i, y, board.getCell(x+i, y).getRed(),
+						board.getCell(x+i, y).getGreen(), board.getCell(x+i, y).getBlue());
+				
+				if  (board.getCell(x, y+i).isItem()){
+					gui.md_setSpriteVisible(board.getCell(x, y+i).idItem(), true);
+				}else if (board.getCell(x+i, y).isItem()){
+					gui.md_setSpriteVisible(board.getCell(x+i, y).idItem(), true);
+				}	
+			}else if(y-i <0 && x+i>=50){
+				gui.md_setSquareColor(x, y+i, board.getCell(x, y+i).getRed(),
+						board.getCell(x, y+i).getGreen(), board.getCell(x, y+i).getBlue());
+				gui.md_setSquareColor(x-i, y, board.getCell(x-i, y).getRed(),
+						board.getCell(x-i, y).getGreen(), board.getCell(x-i, y).getBlue());
+				
+				if  (board.getCell(x, y+i).isItem()){
+					gui.md_setSpriteVisible(board.getCell(x, y+i).idItem(), true);
+				}else if (board.getCell(x-i, y).isItem()){
+					gui.md_setSpriteVisible(board.getCell(x-i, y).idItem(), true);
+				}
+			}else if(x-i <0 && y+i>=50){
+				gui.md_setSquareColor(x, y-i, board.getCell(x, y-i).getRed(),
+						board.getCell(x, y-i).getGreen(), board.getCell(x, y-i).getBlue());
+				gui.md_setSquareColor(x+i, y, board.getCell(x+i, y).getRed(),
+						board.getCell(x+i, y).getGreen(), board.getCell(x+i, y).getBlue());
+				if (board.getCell(x, y-i).isItem()) {
+					gui.md_setSpriteVisible(board.getCell(x, y-i).idItem(), true);
+				}else if (board.getCell(x+i, y).isItem()){
+					gui.md_setSpriteVisible(board.getCell(x+i, y).idItem(), true);
+				}
+			
+			}else if(x+i >=50 && y+i>=50){	
+				gui.md_setSquareColor(x, y-i, board.getCell(x, y-i).getRed(),
+						board.getCell(x, y-i).getGreen(), board.getCell(x, y-i).getBlue());
+				gui.md_setSquareColor(x-i, y, board.getCell(x-i, y).getRed(),
+						board.getCell(x-i, y).getGreen(), board.getCell(x-i, y).getBlue());
+				
+				if (board.getCell(x, y-i).isItem()){
+					gui.md_setSpriteVisible(board.getCell(x, y-i).idItem(), true);
+				}else if (board.getCell(x-i, y).isItem()){
+					gui.md_setSpriteVisible(board.getCell(x-i, y).idItem(), true);
 				}
 			}else if(y-i <0){
 				gui.md_setSquareColor(x, y+i, board.getCell(x, y+i).getRed(),
@@ -116,103 +166,88 @@ public class Player {
 		
 	}
 	
-	public void TakeItem(MiniDungeonGUI gui, Board board, Player player){
-		if (board.getCell(player.getPosX(), player.getPosY()).isItem()){
+	public void TakeItem(MiniDungeonGUI gui, Board board){
+		Cell cell = board.getCell(getPosX(), getPosY());
+		if (cell.isItem()){
 			
-			if (board.getCell(player.getPosX(), player.getPosY()).idItem()==2){
-				player.setStrength(player.getStrength()+300);
-				gui.md_setTextStrength(player.getStrength());
-				board.getCell(player.getPosX(), player.getPosY()).deleteCell(2);
-				gui.md_setSpriteVisible(2, false);
+			cell.deleteCell(cell.idItem());
+			gui.md_setSpriteVisible(cell.idItem(), false);
 			
-			}else if (board.getCell(player.getPosX(), player.getPosY()).idItem()==3){
-				player.setFood(player.getFood()+300);
-				gui.md_setTextFood(player.getFood());
-				board.getCell(player.getPosX(), player.getPosY()).deleteCell(3);
-				gui.md_setSpriteVisible(3, false);
-				
-				
-			}else if (board.getCell(player.getPosX(), player.getPosY()).idItem()==4){
-				player.setHealthmax(player.getHealthmax()+5);
-				gui.md_setTextHealthMax(player.getHealthmax());
-				board.getCell(player.getPosX(), player.getPosY()).deleteCell(4);
-				gui.md_setSpriteVisible(4, false);
-				
-				
-			}else if (board.getCell(player.getPosX(), player.getPosY()).idItem()==5){
-				player.setHealth(player.getHealth()+5);
-				gui.md_setTextHealthCurrent(player.getHealth());
-				board.getCell(player.getPosX(), player.getPosY()).deleteCell(5);
-				gui.md_setSpriteVisible(5, false);
-				
-				
-			}else if (board.getCell(player.getPosX(), player.getPosY()).idItem()==6){
-				player.setGold(player.getGold()+5);
-				gui.md_setTextGold(player.getGold());
-				board.getCell(player.getPosX(), player.getPosY()).deleteCell(6);
-				gui.md_setSpriteVisible(6, false);
-				
-				
-			}
+			if (cell.nameItem() == "sword.png"){
+				setStrength(getStrength()+300);
+				gui.md_setTextStrength(getStrength());
 			
+			}else if(cell.nameItem() == "apple.png"){
+				setFood(getFood()+300);
+				gui.md_setTextFood(getFood());
+				
+			}else if(cell.nameItem() == "heart.png"){
+				setHealthmax(getHealthmax()+5);
+				gui.md_setTextHealthMax(getHealthmax());
+				
+			}else if(cell.nameItem() == "potion.png"){
+				setHealth(getHealth()+5);
+				gui.md_setTextHealthCurrent(getHealth());
+				
+			}else if(cell.nameItem() == "gold.png"){
+
+				setGold(getGold()+5);
+				gui.md_setTextGold(getGold());
+				
+			}else if(cell.nameItem() == "eye.png"){
+				
+				setPerception(getPerception()+1);
+				gui.md_setTextPerception(getPerception());
+			}		
 		}
-		
 	}
 	
-	public void Move(MiniDungeonGUI gui, Board board, Player player){
-		int perception = player.getPerception();
-		int x = player.getPosX();
-		int y = player.getPosY();
-		board.explorerCellAdyacents(perception, x, y);
-		gui.md_addSprite(1, "white-queen.png", true);
-		gui.md_setSpriteVisible(1, true);
-		gui.md_moveSprite(1, x, y);
-		PaintCell(gui, board, perception, x, y);
-		Cell cell = board.getCell(x, y);
+	public void Move(MiniDungeonGUI gui, Board board){
+		int perception = getPerception();
+		int x = getPosX();
+		int y = getPosY();
 
+		String lastAction = gui.md_getLastAction().toLowerCase();
+		perception = getPerception();
+		
+		if (lastAction.equals("left") && x > 0 && board.getBoard()[x-1][y].isWay()) {
+			setFood(getFood()-1);
+			gui.md_setTextFood(getFood());
+			x--;
+			setPosX(x);
+			board.explorerCellAdyacents(perception, x, y);
+			paintExplorer(gui, board, perception);
+			TakeItem(gui, board);
 
-		while(!cell.isDoor()) {
-			cell = board.getCell(x, y);
-			String lastAction = gui.md_getLastAction().toLowerCase();
-			
-			if (lastAction.equals("left") && x > 0 && board.getBoard()[x-1][y].isWay()) {
-				player.setFood(player.getFood()-1);
-				gui.md_setTextFood(player.getFood());
-				x--;
-				player.setPosX(x);
-				board.explorerCellAdyacents(perception, x, y);
-				PaintCell(gui, board, perception, x, y);
-				TakeItem(gui, board, player);
+		}else if(lastAction.equals("right") && x+1<50 && board.getBoard()[x+1][y].isWay()){
+			setFood(getFood()-1);
+			gui.md_setTextFood(getFood());
+			x++;
+			setPosX(x);
+			board.explorerCellAdyacents(perception, x, y);
+			paintExplorer(gui, board, perception);
+			TakeItem(gui, board);
 
-			}else if(lastAction.equals("right") && x+1<50 && board.getBoard()[x+1][y].isWay()){
-				player.setFood(player.getFood()-1);
-				gui.md_setTextFood(player.getFood());
-				x++;
-				player.setPosX(x);
-				board.explorerCellAdyacents(perception, x, y);
-				PaintCell(gui, board, perception, x, y);
-				TakeItem(gui, board, player);
+		}else if(lastAction.equals("up") && y>0 && board.getBoard()[x][y-1].isWay() ){
+			setFood(getFood()-1);
+			gui.md_setTextFood(getFood());
+			y--;
+			setPosY(y);
+			board.explorerCellAdyacents(perception, x, y);
+			paintExplorer(gui, board, perception);
+			TakeItem(gui, board);
 
-			}else if(lastAction.equals("up") && y>0 && board.getBoard()[x][y-1].isWay() ){
-				player.setFood(player.getFood()-1);
-				gui.md_setTextFood(player.getFood());
-				y--;
-				player.setPosY(y);
-				board.explorerCellAdyacents(perception, x, y);
-				PaintCell(gui, board, perception, x, y);
-				TakeItem(gui, board, player);
+		}else if(lastAction.equals("down")&& y+1<50 && board.getBoard()[x][y+1].isWay()){
+			setFood(getFood()-1);
+			gui.md_setTextFood(getFood());
+			y++;
+			setPosY(y);
+			board.explorerCellAdyacents(perception, x, y);
+			paintExplorer(gui, board, perception);
+			TakeItem(gui, board);
 
-			}else if(lastAction.equals("down")&& y+1<50 && board.getBoard()[x][y+1].isWay()){
-				player.setFood(player.getFood()-1);
-				gui.md_setTextFood(player.getFood());
-				y++;
-				player.setPosY(y);
-				board.explorerCellAdyacents(perception, x, y);
-				PaintCell(gui, board, perception, x, y);
-				TakeItem(gui, board, player);
-
-			}
-		} 
+		}
+		
 	}
 
 	public int getPosX() {
@@ -253,6 +288,14 @@ public class Player {
 
 	public void setHealth(int health) {
 		this.health = health;
+	}
+	
+	public int getHealthmax() {
+		return healthmax;
+	}
+
+	public void setHealthmax(int healthmax) {
+		this.healthmax = healthmax;
 	}
 
 	public int getStrength() {

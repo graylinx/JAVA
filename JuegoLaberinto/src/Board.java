@@ -2,9 +2,20 @@ import minidungeon.MiniDungeonGUI;
 
 public class Board {
 	private Cell [][] board= new Cell[50][50];
+	private String [] arrayItem = {"sword.png", "apple.png", "heart.png", "potion.png", "gold.png", "eye.png"};
+
 	
 	
-	public Board(){
+	
+	public Board( MiniDungeonGUI gui, Player player, int level){
+		
+		initBoard();
+		GenerateBoard(player);
+		GenerateItem(level);
+		PaintBoard(gui);
+	}
+	
+	public void initBoard(){
 		for(int i=0; i<50; i++){
 			for(int j=0; j<50; j++){
 				this.board[i][j] = new Cell();
@@ -12,80 +23,86 @@ public class Board {
 		}
 	}
 	
-	
-	public void createItem (Board board, int idItem){
+	public void createItem (int idItem, String nameItem){
+		
+		
 		boolean generate = false;
+		
 		while(!generate){
 			int n=(int)(Math.random()*50);
 			int m=(int)(Math.random()*50);
 
-			if (this.board[n][m].isWay()){
-				this.board[n][m].itemCell(idItem);
+			if (this.board[n][m].isWay() && !this.board[n][m].isItem()){
+				this.board[n][m].itemCell(idItem, nameItem);
 				generate = true;
+				
 			}
 		}
 	}
 	
-	public void PaintBoard(MiniDungeonGUI gui, Board tablero){
+	public void alotofItems(String nameItem){
+		for (int jj = 8; jj<36; jj++){
+			if (jj>=8&&jj<18){
+				createItem(jj, nameItem);
+			}else if(jj>=18&&jj<33){
+				createItem(jj, nameItem);
+			}else
+				createItem(jj, nameItem);{
+				
+			}
+		}
+	}
+	
+	public void GenerateItem(int level){
+
+		for (int ii=2; ii<8; ii++){
+			if (ii == 3){
+				createItem(ii, arrayItem[ii-2]);
+				alotofItems(arrayItem[ii-2]);
+			}else if (ii == 5){
+				createItem(ii, arrayItem[ii-2]);
+				alotofItems(arrayItem[ii-2]);
+			}else if (ii == 6){
+				createItem(ii, arrayItem[ii-2]);
+				alotofItems(arrayItem[ii-2]);
+			}else{
+				createItem(ii, arrayItem[ii-2]);
+			}
+		}
+	}
+	
+	public void addSprite(MiniDungeonGUI gui, String nameitems, int id, boolean visible, int x, int y ){
+		
+		
+		gui.md_addSprite(id, nameitems, visible);
+		gui.md_setSpriteVisible(id, visible);
+		gui.md_moveSprite(id, x, y);
+
+	}
+	
+	public void PaintBoard(MiniDungeonGUI gui){
 
 	    for (int ii = 0; ii < 50; ii++) {
 	        for (int jj = 0; jj < 50; jj++) {
-	        	Cell cell = tablero.getBoard()[ii][jj];
+	        	Cell cell = getBoard()[ii][jj];
 	        	if (cell.isWay()){
 	        		gui.md_setSquareColor(ii, jj, cell.getRed(), cell.getGreen(), cell.getBlue());
-		        	if (cell.isItem()){	
-		        		if (cell.idItem() == 2){
-			        		
-			        		gui.md_addSprite(2, "sword.png", true);
-			        		gui.md_setSpriteVisible(2, false);
-			        		gui.md_moveSprite(2, ii, jj);
-		        		}else if(cell.idItem() == 3){
-		        			
-			        		gui.md_addSprite(3, "apple.png", true);
-			        		gui.md_setSpriteVisible(3, false);
-			        		gui.md_moveSprite(3, ii, jj);
-		        			
-		        		}else if(cell.idItem() == 4){
-		        			gui.md_addSprite(4, "heart.png", true);
-			        		gui.md_setSpriteVisible(4, false);
-			        		gui.md_moveSprite(4, ii, jj);
-		        			
-		        		}else if(cell.idItem() == 5){
-		        			gui.md_addSprite(5, "potion.png", true);
-			        		gui.md_setSpriteVisible(5, false);
-			        		gui.md_moveSprite(5, ii, jj);
-		        			
-		        		}else if(cell.idItem() == 6){
-		        			gui.md_addSprite(6, "gold.png", true);
-			        		gui.md_setSpriteVisible(6, false);
-			        		gui.md_moveSprite(6, ii, jj);
-		        			
-		        		}else if(cell.idItem() == 7){
-		        			gui.md_addSprite(7, "eye.png", true);
-			        		gui.md_setSpriteVisible(7, false);
-			        		gui.md_moveSprite(7, ii, jj);
-		        			
-		        		}
+		        	if (cell.isItem()){	   		
+		        		System.out.println(cell.idItem());
+		        		
+		        		addSprite(gui, cell.nameItem(), cell.idItem(), true, ii, jj);
+		        		//countItems++;
 		        	}
 	        	}else{
 	        		gui.md_setSquareColor(ii, jj, cell.getRed(), cell.getGreen(), cell.getBlue());
 	        		
 	        	}
 	        }
-	    }
-		
-		
+	    }	        
+
 	}
 	
-	public void GenerateItem(Board board, int level){
-		createItem(board, 2);
-		createItem(board, 3);
-		createItem(board, 4);
-		createItem(board, 5);
-		createItem(board, 6);
-		createItem(board, 7);
-		
-	}
+	
 	
 	
 	public void PaintRoom(int x, int y){
@@ -102,15 +119,17 @@ public class Board {
 		}	
 	}
 	
-	public void GenerateBoard(int x, int y){
+	public void GenerateBoard(Player player){
 		
+	int x = player.getPosX();
+	int y = player.getPosY();
     int lastDirection = 1;
     for(int i = 1; i < 100; i++) { 
     System.out.println("***"+ i +"***");
    	System.out.print(x + ";");
    	System.out.println(y);
     	if(i%10==0){
-    		this.PaintRoom(x, y);        		
+    		PaintRoom(x, y);        		
     	}else{
 	    	boolean limit= false;
 	    	if(y < 50 && y >= 0 && x >= 0 && x < 50){
@@ -201,6 +220,18 @@ public class Board {
 				this.board[x-i][y].explorerCell();
 				this.board[x][y+i].explorerCell();
 				this.board[x][y-i].explorerCell();
+			}else if(y-i <0 && x-i<0){
+				this.board[x+i][y].explorerCell();
+				this.board[x][y+i].explorerCell();
+			}else if(y-i <0 && x+i>=50){
+				this.board[x-i][y].explorerCell();
+				this.board[x][y+i].explorerCell();
+			}else if(x-i <0 && y+i>=50){
+				this.board[x+i][y].explorerCell();
+				this.board[x][y-i].explorerCell();
+			}else if(x+i >=50 && y+i>=50){	
+				this.board[x-i][y].explorerCell();
+				this.board[x][y-i].explorerCell();
 			}else if(y-i <0){
 				this.board[x+i][y].explorerCell();
 				this.board[x-i][y].explorerCell();
@@ -214,7 +245,6 @@ public class Board {
 				this.board[x][y+i].explorerCell();
 				this.board[x][y-i].explorerCell();
 			}else if(x+i >= 50){
-
 				this.board[x-i][y].explorerCell();
 				this.board[x][y+i].explorerCell();
 				this.board[x][y-i].explorerCell();

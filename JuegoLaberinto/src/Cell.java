@@ -2,6 +2,9 @@
 public class Cell {
 	
 	boolean explored, way, door, item;
+	String nameitem;
+	
+
 
 	int red, green, blue, iditem;
 	
@@ -9,6 +12,7 @@ public class Cell {
 		this.red = 64;
 		this.green = 64;
 		this.blue = 64;
+		
 	}
 	
 	public void explorerCell(){
@@ -29,9 +33,9 @@ public class Cell {
 		
 	
 	public void wayCell(){
-		this.red = 64;
-		this.green = 64;
-		this.blue = 64;
+		this.red = 80;
+		this.green = 80;
+		this.blue = 80;
         this.way =true;
 	}
 	
@@ -43,19 +47,19 @@ public class Cell {
         this.way = true;
 	}
 	
-	public void itemCell(int iditem){
+	public void itemCell(int iditem, String nameitem){
 		this.iditem = iditem;
+		this.nameitem = nameitem;
 		this.item = true;
 		
 	}
+	
 	
 	public void deleteCell(int iditem){
 		this.iditem = iditem;
 		this.item = false;
 		
 	}
-	
-	
 
 	public int getRed() {
 		return red;
@@ -83,6 +87,11 @@ public class Cell {
 
 	public boolean isItem() {
 		return item;
+	}
+	
+
+	public String nameItem(){
+		return this.nameitem;
 	}
 	
 	public int idItem() {

@@ -7,19 +7,8 @@ public class Main {
 	gui.md_println("MiniDungeon");
 	gui.setVisible(true);
 	
-	//inicializo al jugador
-	Player player = new Player();
+	Player player = new Player(gui);
 
-	//Inicializo el tablero
-
-	gui.md_setTextGold(player.getGold());
-	gui.md_setTextFood(player.getFood());
-	gui.md_setTextHealthCurrent(player.getHealth());
-	gui.md_setTextHealthMax(player.getHealthmax());
-	gui.md_setTextStrength(player.getStrength());
-	gui.md_setTextPerception(player.getPerception());
-	
-	
 	int X=(int)(Math.random()*50);
 	int Y=(int)(Math.random()*50);
 	
@@ -28,16 +17,25 @@ public class Main {
 	
 	int level = 5; 
 	
-	while(level!=0){
-		gui.md_setTextFloor(level);		
-		Board board = new Board();
-		board.GenerateBoard( player.getPosX(), player.getPosY());
-		board.GenerateItem(board, level);
-		board.PaintBoard(gui, board);
-		player.Move(gui, board, player);
-		level --;
+	Board board = new Board(gui, player, level);
+	board.explorerCellAdyacents(player.getPerception(), player.getPosX(), player.getPosY());
+	board.addSprite(gui, "white-queen.png", 1, true, player.getPosX(), player.getPosY());
+	player.paintExplorer(gui, board, player.getPerception());
 	
+	while(level!=0){
+		
+		Cell cell = board.getCell(player.getPosX(), player.getPosY());
+	
+		if (!cell.isDoor()){
+			player.Move(gui, board);
+		}else{
+			level --;
+			gui.md_setTextFloor(level);		
+			board = new Board(gui, player, level);
+			board.explorerCellAdyacents(player.getPerception(), player.getPosX(), player.getPosY());
+			board.addSprite(gui, "white-queen.png", 1, true, player.getPosX(), player.getPosY());
+			player.paintExplorer(gui, board, player.getPerception());
+		}
 	}
-	}
-
+}
 }
