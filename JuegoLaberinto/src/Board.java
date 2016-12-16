@@ -3,9 +3,6 @@ import minidungeon.MiniDungeonGUI;
 public class Board {
 	private Cell [][] board= new Cell[50][50];
 	private String [] arrayItem = {"sword.png", "apple.png", "heart.png", "potion.png", "gold.png", "eye.png"};
-
-	
-	
 	
 	public Board( MiniDungeonGUI gui, Player player, int level){
 		
@@ -40,33 +37,36 @@ public class Board {
 		}
 	}
 	
-	public void alotofItems(String nameItem){
-		for (int jj = 8; jj<36; jj++){
-			if (jj>=8&&jj<18){
-				createItem(jj, nameItem);
-			}else if(jj>=18&&jj<33){
-				createItem(jj, nameItem);
-			}else
-				createItem(jj, nameItem);{
-				
+	public void alotofItems(String apple, String potion, String gold){
+		int maxapple = 10;
+		int maxpotions = 3;
+		int maxgold = 15;
+		int napple = (int)(Math.random()*(maxapple));
+		int npotions = (int)(Math.random()*(maxpotions));
+		int ngold = (int)(Math.random()*(maxgold));
+		int total = napple + npotions + ngold;
+		for (int jj = 0; jj<total; jj++){
+			if (jj<napple){
+				int idapple = jj + 8;
+				createItem(idapple, apple);
+			}else if(jj>=napple&&jj<napple+npotions){
+				int idpotion = jj +8;
+				createItem(idpotion, potion);
+			}else{
+				int idgold = jj + 8;
+				createItem(idgold, gold);
 			}
+			
 		}
 	}
 	
 	public void GenerateItem(int level){
 
-		for (int ii=2; ii<8; ii++){
-			if (ii == 3){
+		for (int ii=2; ii<9; ii++){
+			if (ii < 8){
 				createItem(ii, arrayItem[ii-2]);
-				alotofItems(arrayItem[ii-2]);
-			}else if (ii == 5){
-				createItem(ii, arrayItem[ii-2]);
-				alotofItems(arrayItem[ii-2]);
-			}else if (ii == 6){
-				createItem(ii, arrayItem[ii-2]);
-				alotofItems(arrayItem[ii-2]);
 			}else{
-				createItem(ii, arrayItem[ii-2]);
+				alotofItems(arrayItem[1],arrayItem[3], arrayItem[4]);
 			}
 		}
 	}
@@ -80,6 +80,12 @@ public class Board {
 
 	}
 	
+	public void paintItem(MiniDungeonGUI gui, Cell cell, int x, int y){
+		if (cell.isItem()){	 
+    		addSprite(gui, cell.nameItem(), cell.idItem(), true, x, y);
+    	}
+	}
+	
 	public void PaintBoard(MiniDungeonGUI gui){
 
 	    for (int ii = 0; ii < 50; ii++) {
@@ -87,12 +93,7 @@ public class Board {
 	        	Cell cell = getBoard()[ii][jj];
 	        	if (cell.isWay()){
 	        		gui.md_setSquareColor(ii, jj, cell.getRed(), cell.getGreen(), cell.getBlue());
-		        	if (cell.isItem()){	   		
-		        		System.out.println(cell.idItem());
-		        		
-		        		addSprite(gui, cell.nameItem(), cell.idItem(), true, ii, jj);
-		        		//countItems++;
-		        	}
+		        	paintItem(gui, cell, ii, jj);
 	        	}else{
 	        		gui.md_setSquareColor(ii, jj, cell.getRed(), cell.getGreen(), cell.getBlue());
 	        		
@@ -101,9 +102,6 @@ public class Board {
 	    }	        
 
 	}
-	
-	
-	
 	
 	public void PaintRoom(int x, int y){
 		int xweight = x + (int)(Math.random()*5+3);;

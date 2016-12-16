@@ -25,6 +25,7 @@ public class Main {
 	while(level!=0){
 		
 		Cell cell = board.getCell(player.getPosX(), player.getPosY());
+		System.out.println(cell.isDoor());
 	
 		if (!cell.isDoor()){
 			player.Move(gui, board);

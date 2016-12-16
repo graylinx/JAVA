@@ -146,7 +146,7 @@ public class Player {
 				}else if (board.getCell(x+i, y).isItem()){
 					gui.md_setSpriteVisible(board.getCell(x+i, y).idItem(), true);
 				}
-			}else if(x+1 >=50){
+			}else if(x+i >=50){
 				gui.md_setSquareColor(x, y-i, board.getCell(x, y-i).getRed(),
 						board.getCell(x, y-i).getGreen(), board.getCell(x, y-i).getBlue());
 				gui.md_setSquareColor(x, y+i, board.getCell(x, y+i).getRed(),
@@ -169,7 +169,6 @@ public class Player {
 	public void TakeItem(MiniDungeonGUI gui, Board board){
 		Cell cell = board.getCell(getPosX(), getPosY());
 		if (cell.isItem()){
-			
 			cell.deleteCell(cell.idItem());
 			gui.md_setSpriteVisible(cell.idItem(), false);
 			
@@ -208,7 +207,6 @@ public class Player {
 		int y = getPosY();
 
 		String lastAction = gui.md_getLastAction().toLowerCase();
-		perception = getPerception();
 		
 		if (lastAction.equals("left") && x > 0 && board.getBoard()[x-1][y].isWay()) {
 			setFood(getFood()-1);
