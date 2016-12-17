@@ -12,7 +12,6 @@ public class Cell {
 		this.red = 64;
 		this.green = 64;
 		this.blue = 64;
-		
 	}
 	
 	public void explorerCell(){

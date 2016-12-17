@@ -2,14 +2,23 @@ import minidungeon.MiniDungeonGUI;
 
 public class Player {
 	private int gold, food, health, healthmax, strength, perception, posX, posY;
+	private boolean reduced;
 	
+	public boolean isReduced() {
+		return reduced;
+	}
+
+	public void setReduced(boolean reduced) {
+		this.reduced = reduced;
+	}
+
 	Player(MiniDungeonGUI gui){
 		this.gold = 0;
-		this.food = 500;
+		this.food = 5;
 		this.health = 20;
 		this.healthmax = 20;
 		this.strength = 1;
-		this.perception = 1;
+		this.perception = 5;
 		this.posX = 1;
 		this.posY = 1;
 		
@@ -197,8 +206,36 @@ public class Player {
 				
 				setPerception(getPerception()+1);
 				gui.md_setTextPerception(getPerception());
+				setReduced(false);
 			}		
 		}
+	}
+	
+	public void textFood(MiniDungeonGUI gui){
+		if (getFood() == 0){
+			int perception = getPerception();
+			int strength = getStrength();
+			if(perception%2!=0 && !isReduced()){
+				setPerception(perception-1);
+				gui.md_setTextPerception(getPerception());
+				setPerception(perception/2);
+				gui.md_setTextPerception(getPerception());
+				setReduced(true);
+			}else if(!isReduced()){
+				setPerception(perception/2);
+				gui.md_setTextPerception(getPerception());
+				setReduced(true);
+			}
+			
+			if(strength>1){
+				setStrength(strength/2);
+				gui.md_setTextStrength(getStrength());
+			}
+		}else if(getFood() > 0){
+			setFood(getFood()-1);
+			gui.md_setTextFood(getFood());
+		}
+		
 	}
 	
 	public void Move(MiniDungeonGUI gui, Board board){
@@ -209,8 +246,7 @@ public class Player {
 		String lastAction = gui.md_getLastAction().toLowerCase();
 		
 		if (lastAction.equals("left") && x > 0 && board.getBoard()[x-1][y].isWay()) {
-			setFood(getFood()-1);
-			gui.md_setTextFood(getFood());
+			textFood(gui);
 			x--;
 			setPosX(x);
 			board.explorerCellAdyacents(perception, x, y);
@@ -218,8 +254,7 @@ public class Player {
 			TakeItem(gui, board);
 
 		}else if(lastAction.equals("right") && x+1<50 && board.getBoard()[x+1][y].isWay()){
-			setFood(getFood()-1);
-			gui.md_setTextFood(getFood());
+			textFood(gui);
 			x++;
 			setPosX(x);
 			board.explorerCellAdyacents(perception, x, y);
@@ -227,8 +262,7 @@ public class Player {
 			TakeItem(gui, board);
 
 		}else if(lastAction.equals("up") && y>0 && board.getBoard()[x][y-1].isWay() ){
-			setFood(getFood()-1);
-			gui.md_setTextFood(getFood());
+			textFood(gui);
 			y--;
 			setPosY(y);
 			board.explorerCellAdyacents(perception, x, y);
@@ -236,8 +270,7 @@ public class Player {
 			TakeItem(gui, board);
 
 		}else if(lastAction.equals("down")&& y+1<50 && board.getBoard()[x][y+1].isWay()){
-			setFood(getFood()-1);
-			gui.md_setTextFood(getFood());
+			textFood(gui);
 			y++;
 			setPosY(y);
 			board.explorerCellAdyacents(perception, x, y);

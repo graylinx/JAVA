@@ -6,6 +6,7 @@ public class Board {
 	
 	public Board( MiniDungeonGUI gui, Player player, int level){
 		
+		
 		initBoard();
 		GenerateBoard(player);
 		GenerateItem(level);
@@ -30,6 +31,7 @@ public class Board {
 			int m=(int)(Math.random()*50);
 
 			if (this.board[n][m].isWay() && !this.board[n][m].isItem()){
+				System.out.println("Manzanaid:");
 				this.board[n][m].itemCell(idItem, nameItem);
 				generate = true;
 				
@@ -41,19 +43,27 @@ public class Board {
 		int maxapple = 10;
 		int maxpotions = 3;
 		int maxgold = 15;
-		int napple = (int)(Math.random()*(maxapple));
-		int npotions = (int)(Math.random()*(maxpotions));
-		int ngold = (int)(Math.random()*(maxgold));
+		int napple = (int)(Math.random()*(maxapple)+1);
+		int npotions = (int)(Math.random()*(maxpotions)+1);
+		int ngold = (int)(Math.random()*(maxgold)+1);
 		int total = napple + npotions + ngold;
+		System.out.println(napple);
+		System.out.println(npotions);
+		System.out.println(ngold);
+		System.out.println(total);
 		for (int jj = 0; jj<total; jj++){
 			if (jj<napple){
 				int idapple = jj + 8;
+				System.out.println("Manzanaid:"+idapple );
 				createItem(idapple, apple);
 			}else if(jj>=napple&&jj<napple+npotions){
+
 				int idpotion = jj +8;
+				System.out.println("Pocionid:"+idpotion );
 				createItem(idpotion, potion);
-			}else{
+			}else if(jj>=napple+npotions && jj<total){
 				int idgold = jj + 8;
+				System.out.println("Oroid:"+idgold );
 				createItem(idgold, gold);
 			}
 			
@@ -82,12 +92,13 @@ public class Board {
 	
 	public void paintItem(MiniDungeonGUI gui, Cell cell, int x, int y){
 		if (cell.isItem()){	 
+			System.out.println(x+";"+y);
     		addSprite(gui, cell.nameItem(), cell.idItem(), true, x, y);
     	}
 	}
 	
 	public void PaintBoard(MiniDungeonGUI gui){
-
+		gui.md_repaintBoard();
 	    for (int ii = 0; ii < 50; ii++) {
 	        for (int jj = 0; jj < 50; jj++) {
 	        	Cell cell = getBoard()[ii][jj];
