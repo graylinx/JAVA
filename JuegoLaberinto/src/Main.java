@@ -15,14 +15,16 @@ public class Main {
 	player.setPosX(X);
 	player.setPosY(Y);
 	
-	int level = 5; 
+	int level = 0; 
+	int eyelevel =(int)(Math.random()*-5);
 	
-	Board board = new Board(gui, player, level);
+	
+	Board board = new Board(gui, player, level, eyelevel);
 	board.explorerCellAdyacents(player.getPerception(), player.getPosX(), player.getPosY());
 	board.addSprite(gui, "white-queen.png", 1, true, player.getPosX(), player.getPosY());
 	player.paintExplorer(gui, board, player.getPerception());
 	
-	while(level!=0){
+	while(level!=-10){
 		
 		Cell cell = board.getCell(player.getPosX(), player.getPosY());
 		//System.out.println(cell.isDoor());
@@ -31,11 +33,16 @@ public class Main {
 			player.Move(gui, board);
 		}else{
 			level --;
+			if(level%5==0){
+				eyelevel =(int)(Math.random()*(level)+level);
+			}
 			gui.md_setTextFloor(level);		
-			board = new Board(gui, player, level);
+			gui.md_clearSprites();
+			board = new Board(gui, player, level, eyelevel);
 			board.explorerCellAdyacents(player.getPerception(), player.getPosX(), player.getPosY());
 			board.addSprite(gui, "white-queen.png", 1, true, player.getPosX(), player.getPosY());
 			player.paintExplorer(gui, board, player.getPerception());
+			
 		}
 	}
 }

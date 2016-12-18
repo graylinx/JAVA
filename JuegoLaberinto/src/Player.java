@@ -194,8 +194,10 @@ public class Player {
 				gui.md_setTextHealthMax(getHealthmax());
 				
 			}else if(cell.nameItem() == "potion.png"){
-				setHealth(getHealth()+5);
-				gui.md_setTextHealthCurrent(getHealth());
+				if(getHealth()<getHealthmax()){
+					setHealth(getHealth()+5);
+					gui.md_setTextHealthCurrent(getHealth());
+				}
 				
 			}else if(cell.nameItem() == "gold.png"){
 

@@ -4,12 +4,11 @@ public class Board {
 	private Cell [][] board= new Cell[50][50];
 	private String [] arrayItem = {"sword.png", "apple.png", "heart.png", "potion.png", "gold.png", "eye.png"};
 	
-	public Board( MiniDungeonGUI gui, Player player, int level){
-		
+	public Board( MiniDungeonGUI gui, Player player, int level, int eyelevel){
 		
 		initBoard();
 		GenerateBoard(player);
-		GenerateItem(level);
+		GenerateItem(level, eyelevel);
 		PaintBoard(gui);
 	}
 	
@@ -31,7 +30,6 @@ public class Board {
 			int m=(int)(Math.random()*50);
 
 			if (this.board[n][m].isWay() && !this.board[n][m].isItem()){
-				System.out.println("Manzanaid:");
 				this.board[n][m].itemCell(idItem, nameItem);
 				generate = true;
 				
@@ -40,42 +38,36 @@ public class Board {
 	}
 	
 	public void alotofItems(String apple, String potion, String gold){
-		int maxapple = 10;
-		int maxpotions = 3;
-		int maxgold = 15;
+		int maxapple = 2;
+		int maxpotions = 2;
+		int maxgold = 2;
 		int napple = (int)(Math.random()*(maxapple)+1);
 		int npotions = (int)(Math.random()*(maxpotions)+1);
 		int ngold = (int)(Math.random()*(maxgold)+1);
 		int total = napple + npotions + ngold;
-		System.out.println(napple);
-		System.out.println(npotions);
-		System.out.println(ngold);
-		System.out.println(total);
 		for (int jj = 0; jj<total; jj++){
 			if (jj<napple){
 				int idapple = jj + 8;
-				System.out.println("Manzanaid:"+idapple );
 				createItem(idapple, apple);
 			}else if(jj>=napple&&jj<napple+npotions){
-
 				int idpotion = jj +8;
-				System.out.println("Pocionid:"+idpotion );
 				createItem(idpotion, potion);
 			}else if(jj>=napple+npotions && jj<total){
 				int idgold = jj + 8;
-				System.out.println("Oroid:"+idgold );
 				createItem(idgold, gold);
 			}
 			
 		}
 	}
 	
-	public void GenerateItem(int level){
+	public void GenerateItem(int level, int eyelevel){
 
 		for (int ii=2; ii<9; ii++){
-			if (ii < 8){
+			if (ii < 7){
 				createItem(ii, arrayItem[ii-2]);
-			}else{
+			}else if(ii== 7 && level==eyelevel){
+				createItem(ii, arrayItem[ii-2]);
+			}else if (ii==8){
 				alotofItems(arrayItem[1],arrayItem[3], arrayItem[4]);
 			}
 		}
@@ -83,7 +75,9 @@ public class Board {
 	
 	public void addSprite(MiniDungeonGUI gui, String nameitems, int id, boolean visible, int x, int y ){
 		
-		
+		System.out.println(x+";"+y);
+		System.out.println(nameitems);
+		System.out.println(id);
 		gui.md_addSprite(id, nameitems, visible);
 		gui.md_setSpriteVisible(id, visible);
 		gui.md_moveSprite(id, x, y);
@@ -92,7 +86,6 @@ public class Board {
 	
 	public void paintItem(MiniDungeonGUI gui, Cell cell, int x, int y){
 		if (cell.isItem()){	 
-			System.out.println(x+";"+y);
     		addSprite(gui, cell.nameItem(), cell.idItem(), true, x, y);
     	}
 	}
@@ -101,7 +94,7 @@ public class Board {
 		gui.md_repaintBoard();
 	    for (int ii = 0; ii < 50; ii++) {
 	        for (int jj = 0; jj < 50; jj++) {
-	        	Cell cell = getBoard()[ii][jj];
+	        	Cell cell = getCell(ii, jj);
 	        	if (cell.isWay()){
 	        		gui.md_setSquareColor(ii, jj, cell.getRed(), cell.getGreen(), cell.getBlue());
 		        	paintItem(gui, cell, ii, jj);
@@ -134,72 +127,49 @@ public class Board {
 	int y = player.getPosY();
     int lastDirection = 1;
     for(int i = 1; i < 100; i++) { 
-    System.out.println("***"+ i +"***");
-   	System.out.print(x + ";");
-   	System.out.println(y);
     	if(i%10==0){
     		PaintRoom(x, y);        		
     	}else{
 	    	boolean limit= false;
 	    	if(y < 50 && y >= 0 && x >= 0 && x < 50){
-	    		System.out.println("ENTRA");
 	    		int longitud = (int)(Math.random()*17+1);
 	    		int direction = (int)(Math.random()*4);
 	    		while (direction == lastDirection){
 	    			direction = (int)(Math.random()*4);
 	    		}
 	    		while(!limit && longitud>0){
-	    			 System.out.print(x + ";");
-	            	 System.out.println(y);
-	            	 System.out.println("direccion: "+direction);
 	            	 lastDirection = direction;
 	            	 if(direction == 0){
-	            		System.out.println("longitud: "+longitud);
 	                	longitud--;
 	                	this.board[x][y].wayCell();
 	                    y++;
-	                    System.out.println("y: "+ y);
 	                    if(y >= 50){
-	                    	System.out.println("limite");
 	                    	limit = true;
 	                    	--y;
-	                    	System.out.println("yrecuperada: "+ y);
 	                    }
 	            	 }else if(direction ==1){
 	    				longitud--;
-	    				System.out.println("longitud: "+longitud);
 	    				this.board[x][y].wayCell();
 	                    y--;
-	                    System.out.println("y: "+ y);
 	                    if(y < 0){
-	                    	System.out.println("limite");
 	                    	limit = true;
 	                    	++y;
-	                    	System.out.println("yrecuperada: "+ y);
 	                    }
 	            	 }else if(direction == 2){
 	    				longitud--;
-	    				System.out.println("longitud: "+longitud);
 	    				this.board[x][y].wayCell();
 	                    x++;
-	                    System.out.println("x: "+ x);
 	                    if(x >= 50){
-	                    	System.out.println("limite");
 	                    	limit = true;
 	                    	--x;
-	                    	System.out.println("xrecuperada: "+ x);
 	                    }
 	            	 }else{
 	    				longitud--;
-	    				System.out.println("longitud: "+longitud);
 	    				this.board[x][y].wayCell();
 	                    x--;
-	                    System.out.println("x: "+ x);
 	                    if(x < 0){
-	                    	System.out.println("limite");
 	                    	limit = true;
 	                    	++x;
-	                    	System.out.println("xrecuperada: "+ x);
 	                    }
 	            	 }
 	            	}
